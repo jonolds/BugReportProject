@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<declare-styleable name="View">
+		<attr name="isVisible" format="boolean"/>
+		<attr name="isGone" format="boolean"/>
+	</declare-styleable>
+
+	<declare-styleable name="ToggleButton">
+		<attr name="torch" format="boolean"/>
+	</declare-styleable>
+
+	<declare-styleable name="RecyclerView">
+		<attr name="artist_filter_list" format="reference"/>
+		<attr name="img_proxies" format="reference"/>
+		<attr name="lot_items_list" format="reference"/>
+	</declare-styleable>
+
+
+	<declare-styleable name="TextView">
+		<attr name="margin_alt" format="dimension"/>
+	</declare-styleable>
+
+	<declare-styleable name="ImageButton">
+		<attr name="flashState" format="integer"/>
+	</declare-styleable>
+
+
+	<declare-styleable name="ImageView">
+		<attr name="bitmapp" format="reference"/>
+	</declare-styleable>
+
+	<declare-styleable name="MyParent">
+		<attr name="text" format="string" />
+		<attr name="textSize" format="string" />
+	</declare-styleable>
+
+	<declare-styleable name="LabeledText" parent="MyParent">
+		<attr name="text"/>
+	</declare-styleable>
+
+
+	<declare-styleable name="ReturnSelectorView" parent="MyParent">
+		<attr name="returnObs" format="reference"/>
+	</declare-styleable>
+
+
+	<declare-styleable name="LocationSelectorView" parent="MyParent">
+		<attr name="vm" format="reference"/>
+		<attr name="chuser" format="reference" />
+	</declare-styleable>
+
+	<declare-styleable name="DelaySelectorView" parent="MyParent">
+		<attr name="delayObs" format="reference"/>
+	</declare-styleable>
+
+	<declare-styleable name="LabeledEditText" parent="MyParent">
+		<attr name="android:inputType"/>
+		<attr name="android:ems"/>
+		<attr name="text"/>
+		<attr name="onlyInt" format="integer" />
+		<attr name="prefsObs" format="reference" />
+	</declare-styleable>
+
+	<declare-styleable name="LabeledMultilineEditText" parent="MyParent">
+		<attr name="text"/>
+	</declare-styleable>
+
+	<declare-styleable name="TextWithHeader" parent="MyParent">
+		<attr name="header" format="string" localization="suggested" />
+		<attr name="text"/>
+		<attr name="body_text_color" format="color" />
+		<attr name="header_text_color" format="color" />
+	</declare-styleable>
+
+
+	<declare-styleable name="MaterialSpinner">
+		<attr name="android:enabled" />
+		<attr name="android:focusable" />
+		<attr name="android:focusableInTouchMode" />
+		<attr name="android:prompt" />
+		<attr name="android:src" />
+		<attr name="android:textColor" format="color"/>
+		<attr name="android:textSize" />
+		<attr name="android:text" />
+		<attr name="android:theme" />
+		<attr name="android:gravity" />
+		<attr name="srcCompat" />
+		<attr name="spinnerMode" format="enum">
+			<enum name="dialog" value="0" />
+			<enum name="dropdown" value="1" />
+			<enum name="bottomsheet" value="2" />
+		</attr>
+	</declare-styleable>
+</resources>
