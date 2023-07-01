@@ -25,18 +25,15 @@ fun Modifier.dragReorder(state: DragState2, key: Any): Modifier = composed {
 		
 		detectDragGesturesAfterLongPress(
 			onDragStart = { _ ->
-				println("dragStart")
 				state.onDragStart(key)
 			},
 			onDrag = { change, dragAmount ->
 				change.consume()
 				state.onDrag(dragAmount) },
 			onDragCancel = {
-				println("dragCancel")
 				state.onDragCancel()
 		   	},
 			onDragEnd = {
-				println("dragEnd")
 				state.onDragEnd()
 			}
 		)
@@ -131,11 +128,9 @@ class DragState2(
 			else data.targetIdx
 		
 		
-		println("0 ${Thread.currentThread()}")
 		if (destIdx != data.targetIdx && destIdx != -1)
 			move(data.targetIdx, destIdx)
 		
-		println("1 ${Thread.currentThread()}")
 		
 		onDragCancel()
 	}

@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.zIndex
 import com.jonolds.bugreportproject.utils.thenIfNotNull
 import kotlinx.collections.immutable.ImmutableList
 
@@ -22,26 +23,28 @@ fun <T> EditColumn(
 	contentFactory: @Composable (T) -> Unit
 ) {
 
-	val targetIdx by remember { derivedStateOf { dragState?.targetIdx } }
 	
 	SubcomposeLayout(
 		modifier = modifier
 			.background(Color.Black)
 	) { constrs ->
 		
-		println("layout")
 		
 		
-		val measurables = elems.map { elem ->
+		val measurables = elems.mapIndexed { i, elem ->
 			
 			val key = elem.toKey()
 			
+			println("measurement")
 			subcompose(key) {
 				
 				Box(
 					content = { contentFactory(elem) },
 					modifier = Modifier
-						.thenIfNotNull(dragState) { dragReorder(it, key) }
+						.thenIfNotNull(dragState) {
+							dragReorder(it, key)
+								.zIndex(if(dragState?.targetIdx == i) 1f else 0f)
+						}
 				)
 			}[0]
 		}
@@ -51,22 +54,11 @@ fun <T> EditColumn(
 		dragState?.heights = placables.map { it.height }
 		
 		var y = 0
-		val placements = IntArray(placables.size)
-		
-		for (i in placements.indices) {
-			placements[i] = y
-			y+=placables[i].height
-		}
-		
-		
 		layout(constrs.maxWidth, placables.sumOf { it.height }) {
+			println("placement")
 			for (i in placables.indices) {
-				val pl = placables[i]
-				if (i != targetIdx)
-					pl.placeRelative(0, placements[i])
-			}
-			targetIdx?.let {
-				placables[it].placeRelative(0, placements[it])
+				placables[i].placeRelative(0, y)
+				y+=placables[i].height
 			}
 		}
 	}

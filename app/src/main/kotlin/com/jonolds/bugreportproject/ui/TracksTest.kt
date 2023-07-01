@@ -15,9 +15,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.jonolds.bugreportproject.ui.components.TrackCard
-import com.jonolds.bugreportproject.ui.components.editcolumn.EditColumn
 import com.jonolds.bugreportproject.ui.components.editcolumn.DragState2
+import com.jonolds.bugreportproject.ui.components.editcolumn.EditColumn
 import com.jonolds.bugreportproject.ui.theme.ClubhouseColors
 import com.jonolds.bugreportproject.utils.clearFocusOnClick
 
@@ -63,8 +64,11 @@ fun TracksTest(vm: TracksTestVM) {
 				toKey = { uuid },
 				modifier = Modifier
 					.fillMaxWidth(),
-				dragState = dragState
-			) { track -> TrackCard(track = track) }
+				dragState = dragState,
+				contentFactory = { track ->
+					TrackCard(track = track)
+				}
+			)
 		}
 	}
 }
