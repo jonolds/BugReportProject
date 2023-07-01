@@ -52,7 +52,7 @@ class DragState2(
 	
 	val keys: List<Any> by derivedStateOf { getKeys() }
 	
-	var heights by mutableStateOf(listOf<Int>())
+	var heights by mutableStateOf(List(getKeys().size) { 0 })
 	
 	var startData by mutableStateOf<DragStartData?>(null)
 	

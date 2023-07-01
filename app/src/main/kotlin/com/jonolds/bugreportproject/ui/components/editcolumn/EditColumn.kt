@@ -19,7 +19,7 @@ fun <T> EditColumn(
 	elems: ImmutableList<T>,
 	toKey: T.() -> Any,
 	modifier: Modifier = Modifier,
-	dragState: DragState2? = null,
+	dragState: DragState2,
 	contentFactory: @Composable (T) -> Unit
 ) {
 
@@ -41,17 +41,15 @@ fun <T> EditColumn(
 				Box(
 					content = { contentFactory(elem) },
 					modifier = Modifier
-						.thenIfNotNull(dragState) {
-							dragReorder(it, key)
-								.zIndex(if(dragState?.targetIdx == i) 1f else 0f)
-						}
+						.zIndex(if(dragState.targetIdx == i) 1f else 0f)
+						.dragReorder(dragState, key)
 				)
 			}[0]
 		}
 		
 		val placables = measurables.map { it.measure(constrs) }
 		
-		dragState?.heights = placables.map { it.height }
+		dragState.heights = placables.map { it.height }
 		
 		var y = 0
 		layout(constrs.maxWidth, placables.sumOf { it.height }) {
