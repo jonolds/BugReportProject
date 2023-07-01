@@ -29,6 +29,9 @@ fun <T> EditColumn(
 			.background(Color.Black)
 	) { constrs ->
 		
+		println("layout")
+		
+		
 		val measurables = elems.map { elem ->
 			
 			val key = elem.toKey()

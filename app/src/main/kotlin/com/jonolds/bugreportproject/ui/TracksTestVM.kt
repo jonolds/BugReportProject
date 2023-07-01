@@ -16,7 +16,7 @@ import kotlinx.serialization.json.Json
 @Stable
 class TracksTestVM: ViewModel() {
 	
-	private val _tracks = json.decodeFromString<List<TracksItemObservable>>(origTrackListStr).toMutableStateList()
+	private val _tracks = origTrackList.toMutableStateList()
 
 	val tracks by derivedStateOf { _tracks.toImmutableList() }
 	
@@ -34,7 +34,7 @@ val json = Json {
 }
 
 
-internal val origTrackListStr = """[
+internal val origTrackList = """[
 {"position":"1","title":"I Had Too Much to Dream (Last Night)","artistCredit":"The Electric Prunes"},
 {"position":"2","title":"Dirty Water","artistCredit":"The Standells"},
 {"position":"3","title":"Night Time","artistCredit":"The Strangeloves"},
@@ -62,3 +62,4 @@ internal val origTrackListStr = """[
 {"position":"25","title":"Open My Eyes","artistCredit":"Nazz"},
 {"position":"26","title":"Farmer John","artistCredit":"The Premiers"},
 {"position":"27","title":"It's A‐Happening","artistCredit":"The Magic Mushrooms"}]""".trimIndent()
+	.let { json.decodeFromString<List<TracksItemObservable>>(it) }

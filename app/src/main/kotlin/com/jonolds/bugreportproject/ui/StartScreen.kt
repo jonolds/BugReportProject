@@ -1,5 +1,6 @@
 package com.jonolds.bugreportproject.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.jonolds.bugreportproject.ui.theme.ClubhouseColors
+import com.jonolds.bugreportproject.ui.theme.ClubhouseDarkColorScheme
 
 
 @Composable
@@ -22,7 +25,9 @@ fun StartScreenCompose(
 
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(ClubhouseDarkColorScheme.surface)
     ) {
 
         Column {
