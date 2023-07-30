@@ -23,6 +23,8 @@
 	<!-- Declare permissions -->
 	<uses-permission android:name="android.permission.CAMERA" />
 
+	<uses-sdk tools:overrideLibrary="androidx.core.uwb.rxjava3"/>
+
 	<application android:name=".MainApplication"
 		android:usesCleartextTraffic="true"
 		android:allowBackup="false"
@@ -45,17 +47,6 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 
-			<intent-filter>
-				<action android:name="android.intent.action.VIEW" />
-
-				<category android:name="android.intent.category.DEFAULT" />
-				<category android:name="android.intent.category.BROWSABLE" />
-
-				<data android:host="jonolds.com"
-					android:pathPrefix="/oauth2"
-					android:scheme="chubhouse" />
-
-			</intent-filter>
 		</activity>
 
 

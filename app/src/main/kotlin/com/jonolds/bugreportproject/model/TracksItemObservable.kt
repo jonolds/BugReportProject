@@ -5,9 +5,12 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.clubhouse.AbstractTracksItem
 import com.jonolds.bugreportproject.utils.serializers.MutableStateSerializer
 import com.jonolds.bugreportproject.utils.serializers.SnapshotStateListSerializer
 import com.jonolds.bugreportproject.utils.serializers.StateSerializer
+import com.jonolds.string
+import com.jonolds.stringOrNull
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -30,7 +33,7 @@ class TracksItemObservable(
 ): AbstractTracksItem() {
 
 
-	override var position by mutableStateOf(position)
+	override var position by mutableStateOf(position.orEmpty())
 	override var title by mutableStateOf(title)
 	override var artistCredit by mutableStateOf(artistCredit)
 
@@ -39,6 +42,12 @@ class TracksItemObservable(
 	
 	var artistCreditEn by mutableStateOf(!artistCredit.isNullOrBlank())
 
+	constructor(tracksItem: AbstractTracksItem): this(
+		position = tracksItem.position,
+		title = tracksItem.title,
+		artistCredit = tracksItem.artistCredit
+	)
+	
 	override fun toString(): String = "TracksItemObservable(position=${position}, title=${title}, artistCredit=${artistCredit})"
 
 }
@@ -61,8 +70,5 @@ class TracksItemObservableSerializer : KSerializer<TracksItemObservable> {
 	override fun serialize(encoder: Encoder, value: TracksItemObservable) =
 		delegatedSerializer.serialize(encoder, value as AbstractTracksItem)
 }
-
-fun JsonObject.string(key: String): String = this[key]!!.jsonPrimitive.content
-fun JsonObject.stringOrNull(key: String): String? = this[key]?.jsonPrimitive?.contentOrNull
 
 

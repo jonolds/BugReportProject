@@ -13,6 +13,11 @@ inline fun <reified T> Modifier.thenIfNotNull(value: T?, modifier: Modifier.(T) 
 	if (value == null) this else modifier(value)
 
 
+
+inline fun Modifier.thenIf(predicate: Boolean, modifier: Modifier.() -> Modifier) =
+	if (predicate) modifier() else this
+
+
 fun FocusManager.clearFocusOnClick(onClick: () -> Unit) {
 	clearFocus()
 	onClick()

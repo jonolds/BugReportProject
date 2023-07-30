@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,13 +17,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedIconToggleButton
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TextFieldDefaults.indicatorLine
 import androidx.compose.runtime.Composable
@@ -43,11 +43,16 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextIndent
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jonolds.bugreportproject.R
 import com.jonolds.bugreportproject.model.TracksItemObservable
+import com.jonolds.bugreportproject.ui.components.editcolumn7.dragItemHandle7
+import com.jonolds.bugreportproject.ui.components.movablecontent.movableHandle
+import com.jonolds.bugreportproject.ui.components.reocolumn.reoHandle
 import com.jonolds.bugreportproject.ui.theme.ClubhouseColors
 import com.jonolds.bugreportproject.utils.clearFocusOnClick
 
@@ -57,125 +62,80 @@ fun TrackCard(
 	track: TracksItemObservable,
 	modifier: Modifier = Modifier
 ) {
-	
-	
+//	println("new card ${track.position}")
+
+
 	HorizontalCardWithPadding(
+		contentPading = PaddingValues(vertical = if (track.artistCreditEn) 4.dp else 8.dp, horizontal = 4.dp),
 		modifier = modifier
 			.fillMaxWidth()
 			.padding(vertical = 4.dp)
 			.background(ClubhouseColors.seedDarkBlue, shape = RoundedCornerShape(12.dp))
 	) {
-		
+
+
 		TestTrackField(
 			initialValue = track.position,
-			onValueChange = { track.position = it },
-			showIndicator = false,
+			onValueChange = { track.position = it.orEmpty() },
+			unfocusedIndicatorLineThickness = 0.dp,
 			modifier = Modifier
-				.padding(start = 8.dp, end = 12.dp, bottom = if (track.artistCreditEn) 0.dp else 4.dp)
-				.width(20.dp)
+				.padding(start = 8.dp, end = 12.dp)
+				.width(24.dp)
 		)
-		
+
 		Row(
 			horizontalArrangement = Arrangement.SpaceBetween,
 			verticalAlignment = Alignment.CenterVertically,
 			modifier = Modifier
 				.fillMaxWidth()
 		) {
-			
-			
 			TrackAndArtistRow(
 				track = track,
 				modifier = Modifier
 					.weight(1f)
 			)
-			
-			
+
+
 			Row(
-				verticalAlignment = Alignment.Top,
+				verticalAlignment = Alignment.CenterVertically,
 				horizontalArrangement = Arrangement.SpaceBetween,
 				content = {
-					ArtistCreditEnButton(track = track)
-					DragHandle()
-				}
+					ArtistCreditEnButton(
+						track = track,
+						modifier = Modifier
+							.padding(start = 4.dp, end = 8.dp)
+							.size(24.dp)
+					)
+					DragHandle(
+						modifier = Modifier
+							.dragItemHandle7()
+					)
+				},
+				modifier = Modifier
+					.padding(start = 8.dp)
 			)
 		}
 	}
-	
+
 }
 
 
 @Composable
-fun DragHandle() {
-	Icon(
-		painter = painterResource(id = R.drawable.baseline_drag_handle_24_black),
-		contentDescription = "Drag Track",
-		tint = Color.White.copy(alpha = .5f),
-		modifier = Modifier
-			.padding(horizontal = 4.dp)
-			.size(28.dp)
-	)
-}
-
-
-@Composable
-inline fun HorizontalCardWithPadding(
-	modifier: Modifier = Modifier,
-	contentPading: PaddingValues = PaddingValues(vertical = 2.dp, horizontal = 4.dp),
-	content: @Composable RowScope.() -> Unit
+fun DragHandle(
+	modifier: Modifier = Modifier
 ) {
-	Row(
-		verticalAlignment = Alignment.CenterVertically,
+
+	Column(
 		modifier = modifier
 	) {
-		Row(
-			verticalAlignment = Alignment.CenterVertically,
-			content = content,
+		Icon(
+			painter = painterResource(id = R.drawable.baseline_drag_handle_24_black),
+			contentDescription = "Drag Track",
+			tint = Color.White.copy(alpha = .5f),
 			modifier = Modifier
-				.padding(contentPading)
+				.padding(end = 4.dp, top = 4.dp, bottom = 4.dp)
 		)
 	}
-	
-}
-
-@Composable
-fun Splitter(
-	titleTextValue: TextFieldValue,
-	doSplit: (suffix: String) -> Unit
-) {
-	
-	val text = titleTextValue.text
-	val selection = titleTextValue.selection
-	
-	
-	val splitRequirementsMet = selection.start > 0 &&
-		selection.start < text.length &&
-		selection.collapsed
-	
-	val splitText =
-		if (splitRequirementsMet) text.substring(selection.start)
-		else return
-	
-	OutlinedIconButton(
-		onClick = { doSplit(splitText) },
-		shape = CutCornerShape(0.dp),
-		border = BorderStroke(0.dp, SolidColor(Color.Transparent)),
-		content = {
-			Icon(
-				painter = painterResource(id = R.drawable.baseline_airline_stops_24),
-				contentDescription = "Split at title cursor and move to artist",
-				tint = Color.Green.copy(alpha = .5f),
-				modifier = Modifier
-					.graphicsLayer {
-						rotationZ = -90f
-						rotationX = 180f
-					}
-			)
-		},
-		modifier = Modifier
-			.padding(horizontal = 4.dp)
-			.size(28.dp)
-	)
-	
 }
 
 
@@ -188,9 +148,9 @@ fun TrackAndArtistRow(
 		verticalAlignment = Alignment.CenterVertically,
 		modifier = modifier
 	) {
-		
+
 		var titleTextValue by remember(track.uuid) { mutableStateOf(TextFieldValue(track.title)) }
-		
+
 		Column(
 			modifier = Modifier
 				.weight(1f, false)
@@ -208,39 +168,42 @@ fun TrackAndArtistRow(
 							titleTextValue = titleTextValue.copy(selection = TextRange.Zero)
 					}
 			)
-			
+
 			if (track.artistCreditEn)
 				TestTrackField(
 					initialValue = track.artistCredit,
 					onValueChange = { track.artistCredit = it },
 					fontSize = 12.sp,
 					fontStyle = FontStyle.Italic,
-					showIndicator = false,
+					unfocusedIndicatorLineThickness = .3.dp
 				)
 		}
-		
+
 		Splitter(
 			titleTextValue = titleTextValue,
 			doSplit = { suffix ->
-				
+
 				track.artistCredit = "$suffix ${track.artistCredit}".trim()
-				
+
 				track.title = titleTextValue.text.removeSuffix(suffix).trim()
-				
+
 				titleTextValue = TextFieldValue(track.title, TextRange(track.title.length))
-				
+
 				track.artistCreditEn = true
-				
+
 			}
 		)
 	}
-	
+
 }
 
 
 
 @Composable
-fun ArtistCreditEnButton(track: TracksItemObservable) {
+fun ArtistCreditEnButton(
+	track: TracksItemObservable,
+	modifier: Modifier = Modifier
+) {
 	val focus = LocalFocusManager.current
 	OutlinedIconToggleButton(
 		checked = track.artistCreditEn,
@@ -260,12 +223,74 @@ fun ArtistCreditEnButton(track: TracksItemObservable) {
 				modifier = Modifier
 			)
 		},
-		modifier = Modifier
-			.padding(vertical = 2.dp, horizontal = 4.dp)
-			.size(24.dp)
+		modifier = modifier
 	)
 }
 
+
+
+@Composable
+inline fun HorizontalCardWithPadding(
+	modifier: Modifier = Modifier,
+	contentPading: PaddingValues = PaddingValues(),
+	content: @Composable RowScope.() -> Unit
+) {
+	Row(
+		verticalAlignment = Alignment.CenterVertically,
+		modifier = modifier
+	) {
+		Row(
+			verticalAlignment = Alignment.CenterVertically,
+			content = content,
+			modifier = Modifier
+				.padding(contentPading)
+		)
+	}
+
+}
+
+
+@Composable
+fun Splitter(
+	titleTextValue: TextFieldValue,
+	doSplit: (suffix: String) -> Unit
+) {
+
+	val text = titleTextValue.text
+	val selection = titleTextValue.selection
+
+
+	val splitRequirementsMet = selection.start > 0 &&
+		selection.start < text.length &&
+		selection.collapsed
+
+	if (!splitRequirementsMet)
+		return
+
+	val splitText = text.substring(selection.start)
+
+
+	OutlinedIconButton(
+		onClick = { doSplit(splitText) },
+		border = null,
+		content = {
+			Icon(
+				painter = painterResource(id = R.drawable.baseline_airline_stops_24),
+				contentDescription = "Split at title cursor and move to artist",
+				tint = Color.Green.copy(alpha = .5f),
+				modifier = Modifier
+					.graphicsLayer {
+						rotationZ = -90f
+						rotationX = 180f
+					}
+			)
+		},
+		modifier = Modifier
+			.padding(horizontal = 4.dp)
+			.size(28.dp)
+	)
+
+}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -274,37 +299,31 @@ fun TestTrackField(
 	initialValue: TextFieldValue,
 	onValueChange: (TextFieldValue) -> Unit,
 	modifier: Modifier = Modifier,
-	label: String? = null,
-	keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-	visualTransformation: VisualTransformation = neverBlankVisualTransformation,
-	singleLine: Boolean = true,
-	maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
-	minLines: Int = 1,
-	readOnly: Boolean = false,
 	fontSize: TextUnit = 14.sp,
 	fontStyle: FontStyle = FontStyle.Normal,
-	showIndicator: Boolean = true,
+	unfocusedIndicatorLineThickness: Dp = .5.dp,
 	interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
-	
-	
-	BasicTextField(
-		value = initialValue,
-		onValueChange = onValueChange,
-		textStyle = TextStyle(
+
+
+	val trackTextStyle = remember(fontSize, fontStyle) {
+		TextStyle(
 			fontSize = fontSize,
 			fontStyle = fontStyle,
 			color = Color.White,
-			lineHeight = 46.sp
-		),
-		keyboardOptions = keyboardOptions,
+			lineHeight = 46.sp,
+			textIndent = TextIndent(1.5.sp)
+		)
+	}
+
+	BasicTextField(
+		value = initialValue,
+		onValueChange = onValueChange,
+		textStyle = trackTextStyle,
 		interactionSource = interactionSource,
-		readOnly = readOnly,
-		singleLine = singleLine,
-		maxLines = maxLines,
-		minLines = minLines,
-		visualTransformation = visualTransformation,
-		cursorBrush = SolidColor(Color.White),
+		singleLine = true,
+		visualTransformation = neverBlankVisualTransformation,
+		cursorBrush = remember { SolidColor(Color.White) },
 		modifier = modifier
 			.width(IntrinsicSize.Max)
 			.indicatorLine(
@@ -313,19 +332,18 @@ fun TestTrackField(
 				colors = TextFieldDefaults.colors(),
 				isError = false,
 				focusedIndicatorLineThickness = 1.dp,
-				unfocusedIndicatorLineThickness = if (showIndicator) .5.dp else 0.dp
+				unfocusedIndicatorLineThickness = unfocusedIndicatorLineThickness
 			)
 	) { innerTextField ->
-		
+
 		TextFieldDefaults.DecorationBox(
 			value = initialValue.text,
 			innerTextField = innerTextField,
 			enabled = true,
-			singleLine = singleLine,
-			visualTransformation = visualTransformation,
+			singleLine = true,
+			visualTransformation = VisualTransformation.None,
 			interactionSource = interactionSource,
-			label = label?.let { { Text(text = label) } },
-			contentPadding = PaddingValues(start = 1.dp, end = 1.dp),
+			contentPadding = remember { PaddingValues(start = 1.dp, end = 1.dp) },
 			container = {}
 		)
 	}
@@ -338,66 +356,54 @@ fun TestTrackField(
 	initialValue: String?,
 	onValueChange: (String?) -> Unit,
 	modifier: Modifier = Modifier,
-	label: String? = null,
-	keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-	visualTransformation: VisualTransformation = neverBlankVisualTransformation,
-	singleLine: Boolean = true,
-	maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
-	minLines: Int = 1,
-	readOnly: Boolean = false,
 	fontSize: TextUnit = 14.sp,
 	fontStyle: FontStyle = FontStyle.Normal,
-	showIndicator: Boolean = true,
+	unfocusedIndicatorLineThickness: Dp = .5.dp,
 	interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
-	
-	BasicTextField(
-		value = initialValue.orEmpty(),
-		onValueChange = onValueChange,
-		textStyle = TextStyle(
+
+	val localTextStyle = LocalTextStyle.current
+
+	val trackTextStyle = remember(fontSize, fontStyle) {
+		localTextStyle.copy(
 			fontSize = fontSize,
 			fontStyle = fontStyle,
 			color = Color.White,
-			lineHeight = 46.sp
-		),
-		keyboardOptions = keyboardOptions,
+			textIndent = TextIndent(1.5.sp)
+		)
+	}
+
+	BasicTextField(
+		value = initialValue.orEmpty(),
+		onValueChange = onValueChange,
+		textStyle = trackTextStyle,
 		interactionSource = interactionSource,
-		readOnly = readOnly,
-		singleLine = singleLine,
-		maxLines = maxLines,
-		minLines = minLines,
-		visualTransformation = visualTransformation,
-		cursorBrush = SolidColor(Color.White),
+		singleLine = true,
+		cursorBrush = remember { SolidColor(Color.White) },
 		modifier = modifier
-			.width(IntrinsicSize.Max)
+//			.width(IntrinsicSize.Max)
 			.indicatorLine(
 				enabled = true,
 				interactionSource = interactionSource,
 				colors = TextFieldDefaults.colors(),
 				isError = false,
 				focusedIndicatorLineThickness = 1.dp,
-				unfocusedIndicatorLineThickness = if (showIndicator) .5.dp else 0.dp
+				unfocusedIndicatorLineThickness = unfocusedIndicatorLineThickness
 			)
+			.defaultMinSize(minWidth = 20.dp, minHeight = 5.dp)
 	) { innerTextField ->
-		
+
 		TextFieldDefaults.DecorationBox(
 			value = initialValue.orEmpty(),
 			innerTextField = innerTextField,
 			enabled = true,
-			singleLine = singleLine,
-			visualTransformation = visualTransformation,
+			singleLine = true,
+			visualTransformation = VisualTransformation.None,
 			interactionSource = interactionSource,
-			label = label?.let { { Text(text = label) } },
-			contentPadding = PaddingValues(start = 1.dp, end = 1.dp),
+			contentPadding = remember { PaddingValues(start = 1.dp, end = 1.dp) },
 			container = {}
 		)
 	}
 }
-
-
-
-
-
-
 
 
